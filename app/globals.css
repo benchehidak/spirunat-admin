@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* body {
+  background-image: url("https://i.imgur.com/5GXVaev.png");
+  background-size: cover;
+} */
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+.bgimage {
+  /* background-image : url('https://i.imgur.com/5GXVaev.png');
+        background-repeat: no-repeat;
+        background-size: cover; */
+  padding: 1% 5%;
+}
+.title {
+  font-size: clamp(64px, 10vw, 128px);
+}
+.content {
+  font-size: clamp(34px, 3vw, 60px);
+  padding: 0 7%;
+}
+.bookbtn {
+  margin-top: 3%;
+  width: 250px;
+}
+.bookbtn:hover {
+  background-color: #dfd2f0;
+}
+.loginbtn:hover {
+  background-color: #dfd2f0;
+}
+footer {
+  font-size: clamp(12px, 1vw, 14px);
+}
+th {
+  cursor: pointer;
+}
+.countdown-timer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.box {
+  width: 100px;
+  height: 100px;
+  border: 2px solid #fff;
+  border-radius: 10px;
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.time {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.label {
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+@media screen and (max-width: 768px) {
+  .content {
+    padding: 0;
+    font-size: clamp(30px, 3vw, 60px);
+  }
+  .bookbtn {
+    margin-top: 10%;
+    width: 200px;
+  }
+  footer {
+    font-size: clamp(8px, 1vw, 10px);
+  }
+}

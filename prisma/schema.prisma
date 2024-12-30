@@ -1,0 +1,153 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+type AdressModel {
+  street  String
+  city    String
+  zipCode String
+  state   String
+}
+
+model User {
+  idUser          String       @id @default(auto()) @map("_id") @db.ObjectId
+  first_name      String
+  last_name       String
+  email           String       @unique
+  password        String
+  BillingAdress   AdressModel
+  ShippingAdress  AdressModel?
+  orders          String[]
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime?    @updatedAt
+  profilepic      String?      @default("")
+  dob             DateTime?
+  gender          String?
+  preferedlang    String?
+  purchasehistory String[]
+}
+
+model util {
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  nom      String?
+  prenom   String?
+  email    String?
+  password String?
+}
+
+type Discount {
+  banner     String
+  percentage Float
+  expireDate DateTime
+  isActive   Boolean
+}
+
+model Product {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  active        Boolean?  @default(true)
+  title         String
+  slug          String?
+  moreLove      Boolean   @default(false)
+  price         Float
+  desc          String
+  images        String[]
+  gallery       String[]
+  condition     String?   @default("new")
+  vendor        String?   @default("")
+  color         String?   @default("")
+  brand         String    @default("")
+  categories    String[]  //@map("_categories") @db.ObjectId
+  subcategories String[]  //@map("_subcategories") @db.ObjectId
+  discount      Discount?
+  variations    String?   @default("")
+  weight        Float     @default(0)
+  tags          String[]  @default([])
+  sizes         String[]  @default([])
+  stock         Int       @default(0)
+  review        Int?      @default(0)
+  rating        Int[]     @default([])
+  ratingScore   Float?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Category {
+  id_cat    String   @id @default(auto()) @map("_id") @db.ObjectId
+  nom       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Subcategory {
+  id_subcat  String   @id @default(auto()) @map("_id") @db.ObjectId
+  nom        String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  categoryId String   @map("_categoryId") @db.ObjectId
+}
+
+model Comments {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  idUser    String   @db.ObjectId
+  idProduct String   @db.ObjectId
+  comment   String?
+  stars     Int?
+  createdAt DateTime @default(now())
+}
+
+type product {
+  idProd   String
+  prodName String
+  price    Float
+  qte      Int
+}
+
+type deliveryInfo {
+  deliveryDate     String
+  deliveryTime     String
+  deliveryFee      Float
+  delivery_carrier String
+  tracking_number  String
+}
+
+type discount {
+  amount     Float?
+  percentage Float?
+}
+
+model Order {
+  id             String        @id @default(auto()) @map("_id") @db.ObjectId
+  idUser         String?       @db.ObjectId
+  fname          String
+  lname          String
+  products       product[]
+  totalAmount    Float
+  status         Status        @default(pending)
+  deliveryAdress AdressModel?
+  paymentMethod  String?
+  deliveryMethod String?
+  deliveryInfo   deliveryInfo?
+  discount       discount?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+enum Status {
+  pending
+  processing
+  shipped
+  delivered
+  cancelled
+}
+
+model Admin {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  user     String @unique
+  password String
+  adminlvl Int
+}
