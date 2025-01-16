@@ -7,6 +7,13 @@ export async function POST(req) {
     const prisma = new PrismaClient();
     const data = await req.formData();
     const images = data.getAll('images'); // Assuming 'images' is the field name for multiple images
+    const textToSlug = (text) => {
+      return text
+        .toLowerCase() // Convert to lowercase
+        .trim() // Remove leading and trailing whitespace
+        .replace(/[\s\W-]+/g, '-') // Replace spaces and non-word characters with hyphens
+        .replace(/^-+|-+$/g, ''); // Remove leading and trailing hyphens
+    }
 
     if (!images || images.length === 0) {
         return NextResponse.json({ success: false });
@@ -39,6 +46,7 @@ export async function POST(req) {
             price: parseFloat(data.get('price')),
             weight: parseFloat(data.get('weight')),
             stock: parseInt(data.get('initialStock')),
+            slug: textToSlug(data.get('ProductName')),
           },
         });
         console.log('Product:', product);
