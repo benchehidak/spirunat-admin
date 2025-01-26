@@ -56,6 +56,7 @@ export async function POST(req) {
             tags: product.tags,
             sizes: null,
             stock: product.stock,
+            sold: product.sold,
             review: null,
             rating: null,
             ratingScore: null,

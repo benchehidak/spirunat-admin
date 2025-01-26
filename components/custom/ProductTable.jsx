@@ -85,6 +85,13 @@ const ProductTable = ({ salesdata }) => {
             },
         },
         {
+            Header: "Sold",
+            accessor: "sold",
+            Cell: (row) => {
+                return <div>{row?.cell?.value}</div>;
+            },
+        },
+        {
             Header: "Action",
             accessor: "action",
             Cell: (row) => {
@@ -366,6 +373,7 @@ const ProductTable = ({ salesdata }) => {
                                         <th className="table-th">Title</th>
                                         <th className="table-th">Price</th>
                                         <th className="table-th">Stock</th>
+                                        <th className="table-th">Sold</th>
                                         <th className="table-th"></th>
                                     </tr>
                                 </thead>
