@@ -87,3 +87,7 @@ th {
     font-size: clamp(8px, 1vw, 10px);
   }
 }
+/* .ql-editor {
+  max-height: 6rem;
+  overflow-y: auto;
+} */

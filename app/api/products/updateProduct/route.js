@@ -29,6 +29,7 @@ export async function POST(req) {
                 vendor: dataWithoutId.vendor,
                 weight: Number(dataWithoutId.weight),
                 brand: dataWithoutId.brand,
+                sold: Number(dataWithoutId.sold),
             }
         });
         return NextResponse.json({ success: true, updatedProduct }, { status: 200 });
