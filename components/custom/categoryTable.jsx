@@ -211,7 +211,9 @@ const CategoryTable = (salesdata) => {
   }
   const deleteCategory = () => {
     closeModalDel();    
-    axios.delete(`/api/categories/deletecategory?&id_cat=${ModalDeleteData.id_cat}`)
+    axios.post(`/api/categories/deletecategory/`,{
+      id_cat:ModalDeleteData.id_cat
+    })
      .then(function (response) {
        if (response.data.success == true) {
         toast.success(response.data.message, {
