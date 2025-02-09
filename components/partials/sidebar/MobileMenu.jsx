@@ -38,15 +38,15 @@ const MobileMenu = ({ className = "custom-class" }) => {
           <div className="flex items-center space-x-4">
             <div className="logo-icon">
               {!isDark && !isSemiDark ? (
-                <img src="/assets/images/logo/logo-c.svg" alt="" />
+                <img src="/assets/images/logo/logo-blanc.png" style={{filter: 'invert(1)'}} alt="" />
               ) : (
-                <img src="/assets/images/logo/logo-c-white.svg" alt="" />
+                <img src="/assets/images/logo/logo-blanc.png" alt="" />
               )}
             </div>
             <div>
-              <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100" style={{fontFamily: 'Dalek Pinpoint'}}>
-                ACAMAR
-              </h1>
+              {/* <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
+                Spirunat
+              </h1> */}
             </div>
           </div>
         </Link>

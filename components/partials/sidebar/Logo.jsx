@@ -27,24 +27,24 @@ const SidebarLogo = ({ menuHover }) => {
     >
       <Link href="/">
         <div className="flex items-center space-x-4">
-          {/* <div className="logo-icon">
+          <div className="logo-icon">
             {!isDark && !isSemiDark ? (
-              // <img src="/assets/images/logo/logo-c.svg" alt="" />
-              <p>B</p>
+              <img src="/assets/images/logo/logo-blanc.png" style={{filter: "invert(1)"}} alt="" />
+              
             
             ) : (
-              // <img src="/assets/images/logo/logo-c-white.svg" alt="" />
-              <p>B</p>
+              <img src="/assets/images/logo/logo-blanc.png" alt="" />
+              
             )}
-          </div> */}
+          </div>
 
-          {(!collapsed || menuHover) && (
+          {/* {(!collapsed || menuHover) && (
             <div>
               <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100" >
                 BIOMARKET
               </h1>
             </div>
-          )}
+          )} */}
         </div>
       </Link>
 
