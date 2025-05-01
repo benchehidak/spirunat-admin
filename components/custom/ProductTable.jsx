@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   useTable,
   useRowSelect,
@@ -17,19 +17,24 @@ import Modal from "react-modal";
 import { toast } from "react-toastify";
 import Textinput from "@/components/ui/Textinput";
 import Textarea from "@/components/ui/Textarea";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import SelectComponent from "react-select";
 
 const ProductTable = ({ salesdata }) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [modalViewIsOpen, setModalViewIsOpen] = useState(false);
   const [modalDeleteData, setModalDeleteData] = useState(null);
   const [modalViewData, setModalViewData] = useState(null);
+  const [categoryOptions, setCategoryOptions] = useState([]);
+  const [selectedCategories, setSelectedCategories] = useState([]);
   const [modalEditData, setModalEditData] = useState({
     title: "",
     price: "",
     vendor: "",
     brand: "",
     desc: "",
-    categories: "",
+    categories: [],
     stock: "",
     sold: "",
     weight: "",
@@ -45,8 +50,34 @@ const ProductTable = ({ salesdata }) => {
   };
 
   const openModalView = (productData) => {
-    setModalViewIsOpen(true);
-    setModalViewData(productData);
+    // Fetch categories
+    axios.post("/api/categories/getallcatsubcat/", {}).then((response) => {
+      const allCategories = response.data.categories.map((category) => ({
+        value: category.id_cat,
+        label: category.nom,
+      }));
+      
+      setCategoryOptions(allCategories);
+      
+      // Transform the product's categories into the format needed for react-select
+      const productSelectedCategories = productData.categories?.map(catId => {
+        const categoryObj = allCategories.find(cat => cat.value === catId);
+        return categoryObj || { value: catId, label: `Category ${catId}` };
+      }) || [];
+      
+      setSelectedCategories(productSelectedCategories);
+      
+      setModalViewIsOpen(true);
+      setModalViewData(productData);
+      setModalEditData({
+        ...modalEditData,
+        categories: productData.categories || []
+      });
+    }).catch(error => {
+      console.error("Error fetching categories:", error);
+      setModalViewIsOpen(true);
+      setModalViewData(productData);
+    });
   };
 
   const closeModalView = () => {
@@ -54,27 +85,57 @@ const ProductTable = ({ salesdata }) => {
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("edit", modalEditData);
-    const title = document.getElementById("title").value;
-    const price = document.getElementById("price").value;
-    const vendor = document.getElementById("vendor").value;
-    const brand = document.getElementById("brand").value;
-    const stock = document.getElementById("stock").value;
-    const weight = document.getElementById("weight").value;
-    const sold = document.getElementById("sold").value;
-    console.log("id", modalViewData.id);
-    axios.post(`/api/products/updateProduct`, {
+  e.preventDefault();
+  console.log("edit", modalEditData);
+  const title = document.getElementById("title").value;
+  const price = document.getElementById("price").value;
+  const stock = document.getElementById("stock").value;
+  const weight = document.getElementById("weight").value;
+  const sold = document.getElementById("sold").value;
+  console.log("id", modalViewData.id);
+
+  // Include both description and categories from modalEditData state
+  axios
+    .post(`/api/products/updateProduct`, {
       id: modalViewData.id,
       title: title,
       price: price,
-      vendor: vendor,
-      brand: brand,
+      vendor: "",
+      brand: "",
       stock: stock,
       sold: sold,
       weight: weight,
+      desc: modalEditData.desc,
+      categories: modalEditData.categories, // Adding categories array to the request
+    })
+    .then(function (response) {
+      if (response.data.success) {
+        toast.success("Product updated successfully!", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          draggable: true,
+        });
+        closeModalView();
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
+      } else {
+        toast.warning(response.data.error || "Update failed", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+      }
+    })
+    .catch(function (error) {
+      console.error("Error updating product:", error);
+      toast.error("Failed to update product", {
+        position: "top-right",
+        autoClose: 3000,
+      });
     });
-  };
+};
 
   const COLUMNS = [
     {
@@ -324,46 +385,23 @@ const ProductTable = ({ salesdata }) => {
                       id="price"
                       type="number"
                     />
-                    <Textinput
-                      label="Vendor"
-                      defaultValue={modalViewData?.vendor}
-                      onChange={(e) =>
-                        setModalEditData({
-                          ...modalEditData,
-                          vendor: e.target.value,
-                        })
-                      }
-                      id="vendor"
-                    />
-                    <Textinput
-                      label="Brand"
-                      defaultValue={modalViewData?.brand}
-                      onChange={(e) =>
-                        setModalEditData({
-                          ...modalEditData,
-                          brand: e.target.value,
-                        })
-                      }
-                      id="brand"
-                    />
-                  </div>
-                  <div className="w-1/2 space-y-4">
-                    <Textarea label="Description" value={modalViewData?.desc} onChange={
-                                            (e) => setModalEditData({ ...modalEditData, desc: e.target.value })
-                                        }
-                                        readonly={true}
-                                         />
-                    <Textarea
-                      label="Categories"
-                      value={modalViewData?.categoriesNames.join(", ")}
-                      onChange={(e) =>
-                        setModalEditData({
-                          ...modalEditData,
-                          categories: e.target.value,
-                        })
-                      }
-                      readonly={true}
-                    />
+                    <div className="mb-4">
+                      <label className="block capitalize form-label">Categories</label>
+                      <SelectComponent
+                        isMulti
+                        options={categoryOptions}
+                        value={selectedCategories}
+                        onChange={(selected) => {
+                          setSelectedCategories(selected);
+                          setModalEditData({
+                            ...modalEditData,
+                            categories: selected.map(item => item.value)
+                          });
+                        }}
+                        placeholder="Select Categories"
+                        className="w-full mt-2"
+                      />
+                    </div>
                     <Textinput
                       label="Stock"
                       defaultValue={modalViewData?.stock}
@@ -400,6 +438,34 @@ const ProductTable = ({ salesdata }) => {
                       id="weight"
                       type="number"
                     />
+                  </div>
+                  <div className="w-1/2">
+                    <div className="mb-6">
+                      <label className="form-label">Description</label>
+                      <div style={{ height: "400px" }}>
+                        <ReactQuill
+                          theme="snow"
+                          value={
+                            modalEditData.desc || modalViewData?.desc || ""
+                          }
+                          onChange={(value) =>
+                            setModalEditData({
+                              ...modalEditData,
+                              desc: value,
+                            })
+                          }
+                          readOnly={false}
+                          style={{ height: "350px" }}
+                          modules={{
+                            toolbar: [
+                              ["bold", "italic", "underline"],
+                              [{ list: "ordered" }, { list: "bullet" }],
+                              ["clean"],
+                            ],
+                          }}
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

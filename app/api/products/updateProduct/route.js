@@ -15,6 +15,7 @@ export async function POST(req) {
     }
     
     const { id, ...dataWithoutId } = body;
+    console.log('Data without ID:', dataWithoutId); // Debug line
 
     try {
         const updatedProduct = await prisma.product.update({
@@ -30,6 +31,8 @@ export async function POST(req) {
                 weight: Number(dataWithoutId.weight),
                 brand: dataWithoutId.brand,
                 sold: Number(dataWithoutId.sold),
+                desc: dataWithoutId.desc,
+                categories: dataWithoutId.categories,
             }
         });
         return NextResponse.json({ success: true, updatedProduct }, { status: 200 });

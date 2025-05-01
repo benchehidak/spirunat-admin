@@ -182,6 +182,8 @@ model Order {
   fname          String
   lname          String
   products       product[]
+  phone          String
+  email          String
   totalAmount    Float
   status         Status        @default(pending)
   deliveryAdress AdressModel?
