@@ -27,6 +27,21 @@ export async function POST(req)  {
 
     try {
         console.log("Creating order with data:", body);
+        
+        // Calculate total product price before delivery fee
+        const productTotal = body.products.reduce((sum, product) => sum + (product.price * product.qte), 0);
+        
+        // Apply delivery fee logic
+        let deliveryFee = 0;
+        if (productTotal <= 150) {
+            deliveryFee = 7; // 7 TND delivery fee for orders <= 150 TND
+        }
+        // Update delivery fee in the order data
+        body.deliveryInfo.deliveryFee = deliveryFee;
+        
+        // Update the total amount to include delivery fee
+        body.totalAmount = productTotal + deliveryFee - body.discount.amount;
+        
         for (let i = 0; i < body.products.length; i++) {
             const product = await prisma.product.findUnique({
                 where: {
