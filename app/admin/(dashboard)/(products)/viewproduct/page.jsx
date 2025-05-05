@@ -1,8 +1,14 @@
 'use client';
-import ProductTable from "@/components/custom/ProductTable";
 import Loading from "@/components/Loading";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import dynamic from "next/dynamic";
+
+// Dynamically import the ProductTable component with SSR disabled
+const ProductTable = dynamic(() => import("@/components/custom/ProductTable"), { 
+  ssr: false,
+  loading: () => <Loading />
+});
 
 export default function ProductPage() {
     const [loading, setLoading] = useState(true);
