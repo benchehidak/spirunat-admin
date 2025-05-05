@@ -70,13 +70,31 @@ const ProductTable = ({ salesdata }) => {
       setModalViewIsOpen(true);
       setModalViewData(productData);
       setModalEditData({
-        ...modalEditData,
-        categories: productData.categories || []
+        title: productData.title || "",
+        price: productData.price || "",
+        vendor: productData.vendor || "",
+        brand: productData.brand || "",
+        desc: productData.desc || "",
+        categories: productData.categories || [],
+        stock: productData.stock || "",
+        sold: productData.sold || "",
+        weight: productData.weight || "",
       });
     }).catch(error => {
       console.error("Error fetching categories:", error);
       setModalViewIsOpen(true);
       setModalViewData(productData);
+      setModalEditData({
+        title: productData.title || "",
+        price: productData.price || "",
+        vendor: productData.vendor || "",
+        brand: productData.brand || "",
+        desc: productData.desc || "",
+        categories: productData.categories || [],
+        stock: productData.stock || "",
+        sold: productData.sold || "",
+        weight: productData.weight || "",
+      });
     });
   };
 
@@ -85,57 +103,54 @@ const ProductTable = ({ salesdata }) => {
   };
 
   const handleSubmit = (e) => {
-  e.preventDefault();
-  console.log("edit", modalEditData);
-  const title = document.getElementById("title").value;
-  const price = document.getElementById("price").value;
-  const stock = document.getElementById("stock").value;
-  const weight = document.getElementById("weight").value;
-  const sold = document.getElementById("sold").value;
-  console.log("id", modalViewData.id);
+    e.preventDefault();
+    console.log("edit", modalEditData);
+    
+    // Use state values instead of DOM access
+    const { title, price, stock, weight, sold, desc, categories } = modalEditData;
+    console.log("id", modalViewData.id);
 
-  // Include both description and categories from modalEditData state
-  axios
-    .post(`/api/products/updateProduct`, {
-      id: modalViewData.id,
-      title: title,
-      price: price,
-      vendor: "",
-      brand: "",
-      stock: stock,
-      sold: sold,
-      weight: weight,
-      desc: modalEditData.desc,
-      categories: modalEditData.categories, // Adding categories array to the request
-    })
-    .then(function (response) {
-      if (response.data.success) {
-        toast.success("Product updated successfully!", {
+    axios
+      .post(`/api/products/updateProduct`, {
+        id: modalViewData.id,
+        title,
+        price,
+        vendor: "",
+        brand: "",
+        stock,
+        sold,
+        weight,
+        desc,
+        categories,
+      })
+      .then(function (response) {
+        if (response.data.success) {
+          toast.success("Product updated successfully!", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            draggable: true,
+          });
+          closeModalView();
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000);
+        } else {
+          toast.warning(response.data.error || "Update failed", {
+            position: "top-right",
+            autoClose: 3000,
+          });
+        }
+      })
+      .catch(function (error) {
+        console.error("Error updating product:", error);
+        toast.error("Failed to update product", {
           position: "top-right",
           autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          draggable: true,
         });
-        closeModalView();
-        setTimeout(() => {
-          window.location.reload();
-        }, 3000);
-      } else {
-        toast.warning(response.data.error || "Update failed", {
-          position: "top-right",
-          autoClose: 3000,
-        });
-      }
-    })
-    .catch(function (error) {
-      console.error("Error updating product:", error);
-      toast.error("Failed to update product", {
-        position: "top-right",
-        autoClose: 3000,
       });
-    });
-};
+  };
 
   const COLUMNS = [
     {
@@ -364,7 +379,7 @@ const ProductTable = ({ salesdata }) => {
                   <div className="w-1/2 space-y-4">
                     <Textinput
                       label="Title"
-                      defaultValue={modalViewData?.title}
+                      value={modalEditData.title}
                       onChange={(e) =>
                         setModalEditData({
                           ...modalEditData,
@@ -375,7 +390,7 @@ const ProductTable = ({ salesdata }) => {
                     />
                     <Textinput
                       label="Price"
-                      defaultValue={modalViewData?.price}
+                      value={modalEditData.price}
                       onChange={(e) =>
                         setModalEditData({
                           ...modalEditData,
@@ -404,7 +419,7 @@ const ProductTable = ({ salesdata }) => {
                     </div>
                     <Textinput
                       label="Stock"
-                      defaultValue={modalViewData?.stock}
+                      value={modalEditData.stock}
                       onChange={(e) =>
                         setModalEditData({
                           ...modalEditData,
@@ -416,7 +431,7 @@ const ProductTable = ({ salesdata }) => {
                     />
                     <Textinput
                       label="Sold"
-                      defaultValue={modalViewData?.sold}
+                      value={modalEditData.sold}
                       onChange={(e) =>
                         setModalEditData({
                           ...modalEditData,
@@ -428,7 +443,7 @@ const ProductTable = ({ salesdata }) => {
                     />
                     <Textinput
                       label="Weight"
-                      defaultValue={modalViewData?.weight}
+                      value={modalEditData.weight}
                       onChange={(e) =>
                         setModalEditData({
                           ...modalEditData,
@@ -445,9 +460,7 @@ const ProductTable = ({ salesdata }) => {
                       <div style={{ height: "400px" }}>
                         <ReactQuill
                           theme="snow"
-                          value={
-                            modalEditData.desc || modalViewData?.desc || ""
-                          }
+                          value={modalEditData.desc || ""}
                           onChange={(value) =>
                             setModalEditData({
                               ...modalEditData,
